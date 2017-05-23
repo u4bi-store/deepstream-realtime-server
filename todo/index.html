@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/deepstream.io-client-js/2.1.5/deepstream.js"></script>
+  </head>
+  <body>
+    
+    <script>
+
+        var client = deepstream('localhost:6020'),
+            board;
+
+        client.login({}, function(success){
+            console.log(success);
+
+            board = client.record.getList('todo');
+
+            board.whenReady(function(){
+                console.log(board.getEntries());
+
+                board.subscribe(function(entries){
+                    console.log(entries);
+
+                });
+
+            });
+
+            
+            board.addEntry('티비보기');
+            board.addEntry('잠자기');
+
+            // board.removeEntry('티비보기');
+            // board.removeEntry('잠자기');
+        });
+    </script>
+    
+  </body>
+</html>
