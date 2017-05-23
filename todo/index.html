@@ -36,11 +36,22 @@
                 board.on('entry-removed', function(recordName, index){
                     console.log('remove ', recordName, index);
 
-                });                
+                });
 
             });
-            
+
         });
+
+
+        function add(content){
+            board.addEntry(content);
+            
+        }
+
+        function remove(content){
+            board.removeEntry(content);
+            
+        }        
     </script>
     
   </body>
