@@ -8,11 +8,53 @@
     
     <script>
 
-        var client = deepstream('localhost:6020');
+        var client = deepstream('localhost:6020'),
+            human;
 
         client.login({}, function(success){
-            console.log(success); // 로그인 성공
-            
+            console.log(success);
+
+            /*  Record
+                https://deepstream.io/docs/client-js/datasync-record
+
+            */            
+            human = client.record.getRecord('human');
+
+            human.whenReady(function(){
+                console.log('human.get() ',human.get());
+
+                human.set({
+                    name : 'u4bi',
+                    age  : 13
+                });
+
+                console.log('human.get("name") ', human.get('name'));
+
+                human.subscribe(function(data){
+                    console.log('subscribe', data);
+
+                });
+
+                human.subscribe('name', function(data){
+                    console.log('subscribe - name ', data);
+
+                });
+
+                human.set('name' , 'myungjae.yu');
+
+            });
+
+            client.record.snapshot('human', function(err, data){
+                console.log('snapshot - data', data);
+
+            });
+
+            client.record.has('human', function(err, has){
+                console.log('has', has);
+
+            });
+
+
         });
 
         /*  remote procedure call : 원격 프로시저 호출 :
@@ -29,7 +71,7 @@
         });
 
         client.rpc.make('hello', { name : 'u4bi' }, function(error, result){
-            console.log(error, result);
+            console.log('make - (error, result) ', error, result);
 
         });
     </script>
