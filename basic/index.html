@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/deepstream.io-client-js/2.1.5/deepstream.js"></script>
+  </head>
+  <body>
+    
+    <script>
+
+        var client = deepstream('localhost:6020');
+
+        client.login({}, function(success){
+            console.log(success); // 로그인 성공
+            
+        });
+
+        /*  remote procedure call : 원격 프로시저 호출 :
+            https://deepstream.io/docs/client-js/reqres-response
+
+        */
+        client.rpc.provide('hello', function(data, response){
+            console.log('data', data);
+            
+            response.send('안녕 '+data.name);
+
+            // response.error('에러 보내기');
+            // response.reject(); // NO_RPC_PROVIDER
+        });
+
+        client.rpc.make('hello', { name : 'u4bi' }, function(error, result){
+            console.log(error, result);
+
+        });
+    </script>
+    
+  </body>
+</html>
