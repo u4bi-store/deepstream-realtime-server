@@ -14,6 +14,10 @@
         client.login({}, function(success){
             console.log(success);
 
+            /*  List
+                https://deepstream.io/docs/client-js/datasync-list
+
+            */
             board = client.record.getList('todo');
 
             board.whenReady(function(){
@@ -24,14 +28,18 @@
 
                 });
 
+                board.on('entry-added', function(recordName, index){
+                    console.log('add ', recordName, index);
+
+                });
+
+                board.on('entry-removed', function(recordName, index){
+                    console.log('remove ', recordName, index);
+
+                });                
+
             });
-
             
-            board.addEntry('티비보기');
-            board.addEntry('잠자기');
-
-            // board.removeEntry('티비보기');
-            // board.removeEntry('잠자기');
         });
     </script>
     
