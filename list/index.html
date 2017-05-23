@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/deepstream.io-client-js/2.1.5/deepstream.js"></script>
+  </head>
+  <body>
+    
+    <script>
+
+        var client = deepstream('localhost:6020'),
+            data = {};
+
+        client.login({}, function(success){
+            console.log(success);
+
+            var cards = client.record.getList('cards');
+
+            // cards.setEntries([
+            //     'card/a',
+            //     'card/b',
+            //     'card/c'
+            // ]);
+
+            cards.whenReady(function(){
+
+                cards.getEntries().forEach(function(entry){
+                    // console.log(entry);
+                
+                    var card = client.record.getRecord(entry);
+
+                    card.whenReady(function(){
+                        var obj = {
+                            name : entry.replace('card/', '')
+                        };
+
+                        // card.set(obj);
+
+                        data[entry] = card.get();
+                        
+                        console.log(data[entry]);
+
+                    });
+
+                });
+
+            });
+
+        });
+
+        /*
+        
+            cards [
+                card/a
+                card/b
+                card/c
+            ]
+
+            card/a [
+                { name : a}
+            ]
+
+            card/b [
+                { name : b}
+            ]
+
+            card/c [
+                { name : c}
+            ]
+
+        */
+
+    </script>
+    
+  </body>
+</html>
