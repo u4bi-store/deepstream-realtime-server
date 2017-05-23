@@ -5,8 +5,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/deepstream.io-client-js/2.1.5/deepstream.js"></script>
   </head>
   <body>
+
+      <ul id="board"></ul>
     
     <script>
+        var 
+            element = document.getElementById('board');
 
         var client = deepstream('localhost:6020'),
             board;
@@ -23,8 +27,24 @@
             board.whenReady(function(){
                 console.log(board.getEntries());
 
+                board.getEntries().forEach(function(entry){
+                    
+                    console.log(entry);
+
+                    element.appendChild(create(entry));
+
+                });
+
                 board.subscribe(function(entries){
-                    console.log(entries);
+                    console.log('subscribe : ',entries);
+                    
+                    element.innerHTML = '';
+
+                    entries.forEach(function(entry){
+
+                        element.appendChild(create(entry));
+
+                    });
 
                 });
 
@@ -51,7 +71,16 @@
         function remove(content){
             board.removeEntry(content);
             
-        }        
+        }
+
+        function create(value){
+            var 
+                li = document.createElement('li');
+                
+            li.innerText = value;
+
+            return li;
+        }
     </script>
     
   </body>
