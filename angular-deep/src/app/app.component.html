@@ -1,3 +1,13 @@
-<h1>
-  {{title}}
-</h1>
+<div>
+  
+  <p *ngFor="let chat of chatArray">
+    <strong>{{chat.name}}:</strong>
+    {{chat.text}}
+  </p>
+
+</div>
+
+<div class="compose">
+  <input type="text" [(ngModel)]="text">
+  <button (click)="addChat()">보내기</button>
+</div>

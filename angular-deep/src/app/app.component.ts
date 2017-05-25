@@ -9,9 +9,12 @@ import { DsService } from './ds.service';
 export class AppComponent implements OnInit{
   title = 'app works!';
   
-  constructor(private ds: DsService){
+  name : string;
+  text : string;
+  chats : any;
+  chatArray : any = [];
 
-    this.ds.login(null, this.loginHandler);
+  constructor(private ds: DsService){
     
   }
 
@@ -21,7 +24,40 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(){
+    this.name = window.prompt('이름 설정', '');
+    this.ds.login(null, (success, data) => console.log(success, data));
 
+    this.chats = this.ds.getList('chats');
+
+    this.chats.on('entry-added', recordName =>{
+
+      this.ds.getRecord(recordName).whenReady(record =>{
+
+        record.subscribe((data) =>{
+          if(data.name && data.text)this.chatArray.push(data);
+
+        }, true);
+
+      });
+
+    });
+  }
+
+  addChat() {
+
+    let recordName = 'chat/' + this.ds.dsInstance.getUid();
+
+    let chatRecord = this.ds.getRecord(recordName);
+    
+
+    chatRecord.set({
+      name: this.name,
+      text: this.text
+    });
+    
+    this.text = '';
+    
+    this.chats.addEntry(recordName);
   }
 
 }
