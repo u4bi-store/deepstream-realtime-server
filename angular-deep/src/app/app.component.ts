@@ -49,11 +49,14 @@ export class AppComponent implements OnInit{
 
     let chatRecord = this.ds.getRecord(recordName);
     
+    console.log(chatRecord);
 
     chatRecord.set({
       name: this.name,
       text: this.text
     });
+
+    console.log(chatRecord);
     
     this.text = '';
     
