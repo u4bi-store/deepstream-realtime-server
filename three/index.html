@@ -61,6 +61,7 @@
 
             client.login({}, function(success){
                 console.log(success);
+                
                 items = client.record.getList('items');
 
                 items.whenReady(function(e){
@@ -69,6 +70,17 @@
                         // console.log(entry);
                         client.record.getRecord(entry).whenReady(function(e){
                             // console.log(e.get());
+                            
+                            var data = e.get(),
+                                object = mesh.clone();
+
+                            console.log(data);
+
+                            object.position.set(data.position.x , data.position.y, data.position.z);
+                            scene.add(object);
+                            cube.push(object);
+                            object.name = entry;
+
                         });
 
                     });
@@ -77,26 +89,12 @@
 
                 items.subscribe(function(entries){
                     console.log('subscribe ',entries);
-
                     entries.forEach(function(entry){
                         // console.log('entry ',entry);
-
                         var 
                             entryRecord = client.record.getRecord(entry);
-                        
-                        entryRecord.whenReady(function(e){
-                            
-                            var data = e.get(),
-                                object = mesh.clone();
-
-                            console.log(data);
-                            object.position.set(data.position.x , data.position.y, data.position.z);
-                            scene.add(object);
-                            cube.push(object);
-                            console.log(object);
-                            object.name = entry;
-                            console.log(object.name);
-                            
+                        entryRecord.whenReady(function(record){
+                            // console.log(record);
                         });
                     });
 
@@ -108,7 +106,11 @@
                 });
 
                 items.on('entry-removed', function(recordName, index){
-                    // console.log('remove ', recordName, index);
+                    console.log('remove ', recordName, index);
+
+                    cube.forEach(function(e){
+                        if(e.name === recordName) scene.remove(e);
+                    });
 
                 });
 
@@ -122,7 +124,9 @@
             render();
         }
         
-        function add(uid, content, position){
+        function add(content, position){
+            var uid = new Date().getTime();
+
             items.addEntry('items/'+uid);
 
             var 
@@ -151,7 +155,7 @@
 
             if(intersects.length){
                 console.log('shot ', intersects[0].object.name);
-                intersects[0].object.parent.remove(intersects[0].object);
+                remove(intersects[0].object.name);
             }
 
         }
