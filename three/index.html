@@ -102,9 +102,7 @@
                 items.on('entry-added', function(recordName, index){
                     console.log('add ', recordName, index);
 
-                    var record = client.record.getRecord(recordName);
-
-                    record.whenReady(function(e){
+                    var record = client.record.getRecord(recordName).whenReady(function(e){
                         // console.log(record.get());
                         var data = e.get(),
                             object = mesh.clone();
