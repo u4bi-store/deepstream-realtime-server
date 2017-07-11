@@ -164,3 +164,20 @@ function render(){
 
 }
 
+function setup(){
+    var margin = {
+        x : -3,
+        y : -3
+    };
+
+    for(var i=0; i < 10; i++){
+        for(var k=0; k < 10; k++){
+            add('선물', {
+                x : (i * .3) + margin.x,
+                y : (k * .3) + margin.y,
+                z : 0
+            });
+        }
+    }            
+}
+
