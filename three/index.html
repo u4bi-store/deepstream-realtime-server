@@ -93,9 +93,7 @@
                         var 
                             entryRecord = client.record.getRecord(entry);
                         entryRecord.whenReady(function(record){
-                            // console.log(record);
                             // console.log(record.get());
-
                         });
                     });
 
@@ -107,8 +105,15 @@
                     var record = client.record.getRecord(recordName);
 
                     record.whenReady(function(e){
-                        console.log(record);
-                        console.log(record.get());
+                        // console.log(record.get());
+                        var data = e.get(),
+                            object = mesh.clone();
+
+                        // console.log(data);
+                        object.position.set(data.position.x , data.position.y, data.position.z);
+                        scene.add(object);
+                        cube.push(object);
+                        object.name = recordName;
 
                     });
 
@@ -141,9 +146,9 @@
             var 
                 addRecord = client.record.getRecord('items/'+uid);
 
-            addRecord.whenReady(function(e){
-                e.set({ content : content, position : position });
-            });
+            // addRecord.whenReady(function(e){ // event on, subscribe시 get()을 받지 못함.
+                addRecord.set({ content : content, position : position });
+            // });
             
         }
 
