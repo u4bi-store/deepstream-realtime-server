@@ -61,7 +61,7 @@
 
             client.login({}, function(success){
                 console.log(success);
-                
+
                 items = client.record.getList('items');
 
                 items.whenReady(function(e){
@@ -74,8 +74,7 @@
                             var data = e.get(),
                                 object = mesh.clone();
 
-                            console.log(data);
-
+                            // console.log(data);
                             object.position.set(data.position.x , data.position.y, data.position.z);
                             scene.add(object);
                             cube.push(object);
@@ -95,13 +94,23 @@
                             entryRecord = client.record.getRecord(entry);
                         entryRecord.whenReady(function(record){
                             // console.log(record);
+                            // console.log(record.get());
+
                         });
                     });
 
                 });
 
                 items.on('entry-added', function(recordName, index){
-                    // console.log('add ', recordName, index);                
+                    console.log('add ', recordName, index);
+
+                    var record = client.record.getRecord(recordName);
+
+                    record.whenReady(function(e){
+                        console.log(record);
+                        console.log(record.get());
+
+                    });
 
                 });
 
