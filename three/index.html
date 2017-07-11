@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>deepstream threejs </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/deepstream.io-client-js/2.1.5/deepstream.js"></script>
+    
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+<body>
+    
+    <div id="container"></div>
+
+    <script>
+        
+        var scene,
+            camera,
+            renderer;
+
+        var
+            cube = [],
+            plane,
+            light,
+            mesh;
+
+        var 
+            raycaster;
+
+
+        var 
+            client = deepstream('localhost:6020'),
+            items;
+
+        window.onload = init;
+
+        function init(){
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            scene.add(camera);
+            camera.position.set(10,3,10);
+            camera.lookAt(new THREE.Vector3(0,0,0));
+            scene.add(new THREE.AxisHelper(3));
+            var geometry2 = new THREE.PlaneGeometry(6, 6), material2 = new THREE.MeshPhongMaterial({color: 0xFFFFFF});
+            plane = new THREE.Mesh(geometry2, material2);
+            scene.add(plane);
+            plane.rotateX(-Math.PI/2);
+            light = new THREE.SpotLight(0xFF0000, 1);
+            light.position.set(0, 3, 0);
+            scene.add(light);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(new THREE.Color(0xFF00FF));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('container').appendChild(renderer.domElement);
+
+
+            mesh = new THREE.Mesh( new THREE.BoxGeometry(.3, .3, .3), new THREE.MeshBasicMaterial( { color: 0x00FFFF, wireframe : true } ));
+
+            client.login({}, function(success){
+                console.log(success);
+
+                items = client.record.getList('items');
+                
+                items.whenReady(function(){
+                    // console.log(items.getEntries());
+                    
+                    items.getEntries().forEach(function(entry){
+                        // console.log(entry);
+
+                        var 
+                            entryRecord = client.record.getRecord(entry);
+                        
+                        entryRecord.whenReady(function(){
+                            // console.log(entryRecord.get());
+
+                        });
+
+                    });
+
+                });
+
+                items.subscribe(function(entries){
+                    console.log('subscribe ',entries);
+
+                    entries.forEach(function(entry){
+                        console.log('entry ',entry);
+
+                        var 
+                            entryRecord = client.record.getRecord(entry);
+                        
+                        entryRecord.whenReady(function(){
+                            
+                            var data = entryRecord.get(),
+                                object = mesh.clone();
+                            console.log(data);
+
+                            object.position.set(data.position.x , data.position.y, data.position.z);
+                            scene.add(object);
+                            cube.push(object);
+                            
+                        });
+                    });
+
+                });
+
+                items.on('entry-added', function(recordName, index){
+                    console.log('add ', recordName, index);                
+
+                });
+
+                items.on('entry-removed', function(recordName, index){
+                    console.log('remove ', recordName, index);
+
+                });
+
+            });
+            
+            raycaster = new THREE.Raycaster();
+
+
+            window.addEventListener('resize', resize);
+            document.addEventListener('mousedown', shot);
+            render();
+        }
+        
+        function add(uid, content, position){
+            items.addEntry('items/'+uid);
+
+            var 
+                addRecord = client.record.getRecord('items/'+uid);
+
+            addRecord.whenReady(function(){
+                addRecord.set({ content : content, position : position });
+            });
+            
+        }
+
+        function remove(content){
+            items.removeEntry(content);
+            
+        }
+
+
+
+        function shot(e){
+            e.preventDefault();
+
+            raycaster.setFromCamera({ x :  (e.clientX/window.innerWidth)  * 2 - 1, y : -(e.clientY/window.innerHeight) * 2 + 1 }, camera);
+            
+            var 
+                intersects = raycaster.intersectObjects(cube);
+
+            if(intersects.length) intersects[0].object.parent.remove(intersects[0].object);
+
+        }
+
+        function resize(){ 
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+
+        function render(){
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+
+            scene.traverse(function(e){
+                if(e instanceof THREE.Mesh && e !== plane) e.rotateY(.05);
+            });
+
+        }
+
+    </script>
+
+</body>
