@@ -70,16 +70,7 @@
                         // console.log(entry);
                         client.record.getRecord(entry).whenReady(function(e){
                             // console.log(e.get());
-                            
-                            var data = e.get(),
-                                object = mesh.clone();
-
-                            // console.log(data);
-                            object.position.set(data.position.x , data.position.y, data.position.z);
-                            scene.add(object);
-                            cube.push(object);
-                            object.name = entry;
-
+                            create(entry, e.get());
                         });
 
                     });
@@ -102,17 +93,9 @@
                 items.on('entry-added', function(recordName, index){
                     console.log('add ', recordName, index);
 
-                    var record = client.record.getRecord(recordName).whenReady(function(e){
-                        // console.log(record.get());
-                        var data = e.get(),
-                            object = mesh.clone();
-
-                        // console.log(data);
-                        object.position.set(data.position.x , data.position.y, data.position.z);
-                        scene.add(object);
-                        cube.push(object);
-                        object.name = recordName;
-
+                    client.record.getRecord(recordName).whenReady(function(e){
+                        // console.log(e.get());
+                        create(recordName, e.get());
                     });
 
                 });
@@ -153,6 +136,17 @@
         function remove(content){
             items.removeEntry(content);
             
+        }
+
+        function create(name, data){
+            var 
+                object = mesh.clone();
+
+            object.position.set(data.position.x , data.position.y, data.position.z);
+            scene.add(object);
+            cube.push(object);
+            object.name = name;
+
         }
 
 
