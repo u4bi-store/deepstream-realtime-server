@@ -43,7 +43,7 @@ function init(){
     client.login({}, function(success){
         console.log(success);
 
-        items = client.record.getList('items');
+        items = client.record.getList('TEST-ITEMS');
 
         items.whenReady(function(e){
             // console.log(e.getEntries());
@@ -103,10 +103,10 @@ function init(){
 function add(content, position){
     var uid = new Date().getTime();
 
-    items.addEntry('items/'+uid);
+    items.addEntry('TEST-ITEMS'+uid);
 
     var 
-        addRecord = client.record.getRecord('items/'+uid);
+        addRecord = client.record.getRecord('TEST-ITEMS'+uid);
 
     // addRecord.whenReady(function(e){ // event on, subscribe시 get()을 받지 못함.
         addRecord.set({ content : content, position : position });
@@ -166,16 +166,16 @@ function render(){
 
 function setup(){
     var margin = {
-        x : -3,
-        y : -3
+        y : .5,
+        z : -1.5
     };
 
     for(var i=0; i < 10; i++){
         for(var k=0; k < 10; k++){
             add('선물', {
-                x : (i * .3) + margin.x,
-                y : (k * .3) + margin.y,
-                z : 0
+                x : 0,
+                y : (i * .3) + margin.y,
+                z : (k * .3) + margin.z
             });
         }
     }            
